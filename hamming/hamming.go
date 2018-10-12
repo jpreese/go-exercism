@@ -1,10 +1,10 @@
-// Provides functionality to calculate the Hamming
+// Package hamming provides functionality to calculate the Hamming
 // distance between two DNA strands
 package hamming
 
 import "errors"
 
-// Calculates the Hamming distance between two
+// Distance calculates the Hamming distance between two
 // DNA strands
 func Distance(a, b string) (int, error) {
 
@@ -14,8 +14,8 @@ func Distance(a, b string) (int, error) {
 
 	distance := 0
 
-	for i := 0; i < len(a); i++ {
-		if a[i] != b[i] {
+	for key := range a {
+		if a[key] != b[key] {
 			distance++
 		}
 	}
