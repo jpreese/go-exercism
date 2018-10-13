@@ -1,32 +1,33 @@
 package linkedlist
 
-import "fmt"
+import "errors"
+
+var ErrIndexOutOfRange = errors.New("Index out of range")
 
 type LinkedList struct {
 	Length  int
-	head    *Node
-	current *Node
+	head    *node
+	current *node
 }
 
-type Node struct {
-	Next  *Node
-	Value int
+type node struct {
+	next  *node
+	value int
 }
 
-func (list *LinkedList) Add(value int) *Node {
-
+func (list *LinkedList) Add(value int) *node {
 	if list.Length == 0 {
 		list.Length++
-		list.head = &Node{nil, value}
+		list.head = &node{nil, value}
 		return list.head
 	}
 
 	list.current = list.head
-	for list.current.Next != nil {
-		list.current = list.current.Next
+	for list.current.next != nil {
+		list.current = list.current.next
 	}
 
-	list.current.Next = &Node{nil, value}
+	list.current.next = &node{nil, value}
 	list.Length++
 
 	return list.current
@@ -35,13 +36,13 @@ func (list *LinkedList) Add(value int) *Node {
 func (list *LinkedList) Get(index int) (int, error) {
 
 	if index < 0 || index >= list.Length {
-		return 0, fmt.Errorf("Index %d out of range", index)
+		return 0, ErrIndexOutOfRange
 	}
 
 	list.current = list.head
 	for i := 0; i < index; i++ {
-		list.current = list.current.Next
+		list.current = list.current.next
 	}
 
-	return list.current.Value, nil
+	return list.current.value, nil
 }
