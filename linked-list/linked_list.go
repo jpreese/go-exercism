@@ -3,7 +3,9 @@ package linkedlist
 import "fmt"
 
 type LinkedList struct {
-	Length int
+	Length  int
+	head    *Node
+	current *Node
 }
 
 type Node struct {
@@ -11,26 +13,23 @@ type Node struct {
 	Value int
 }
 
-var head *Node
-var current *Node
-
 func (list *LinkedList) Add(value int) *Node {
 
 	if list.Length == 0 {
 		list.Length++
-		head = &Node{nil, value}
-		return head
+		list.head = &Node{nil, value}
+		return list.head
 	}
 
-	current = head
-	for current.Next != nil {
-		current = current.Next
+	list.current = list.head
+	for list.current.Next != nil {
+		list.current = list.current.Next
 	}
 
-	current.Next = &Node{nil, value}
+	list.current.Next = &Node{nil, value}
 	list.Length++
 
-	return current
+	return list.current
 }
 
 func (list *LinkedList) Get(index int) (int, error) {
@@ -39,10 +38,10 @@ func (list *LinkedList) Get(index int) (int, error) {
 		return 0, fmt.Errorf("Index %d out of range", index)
 	}
 
-	current = head
+	list.current = list.head
 	for i := 0; i < index; i++ {
-		current = current.Next
+		list.current = list.current.Next
 	}
 
-	return current.Value, nil
+	return list.current.Value, nil
 }

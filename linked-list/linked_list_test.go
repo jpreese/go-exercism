@@ -27,7 +27,6 @@ func Test_Get_AddedTwoValues_ReturnsSecondValue(t *testing.T) {
 	var list LinkedList
 	list.Add(1)
 	list.Add(2)
-
 	expected := 2
 
 	actual, _ := list.Get(1)
@@ -37,7 +36,6 @@ func Test_Get_AddedTwoValues_ReturnsSecondValue(t *testing.T) {
 
 func Test_Add_SingleValue_ReturnsAddedNode(t *testing.T) {
 	var list LinkedList
-
 	expected := 1
 
 	actual := list.Add(1)
