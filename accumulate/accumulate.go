@@ -1,10 +1,10 @@
 package accumulate
 
 // Accumulate applies a function to each element in the collection
-func Accumulate(collection []string, function func(string) string) []string {
-	for key, value := range collection {
-		collection[key] = function(value)
+func Accumulate(collection []string, function func(string) string) (result []string) {
+	for key := range collection {
+		result = append(result, function(collection[key]))
 	}
 
-	return collection
+	return
 }
