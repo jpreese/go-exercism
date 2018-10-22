@@ -5,8 +5,7 @@ import (
 	"strings"
 )
 
-var keys = ring.New(12)
-var keyTranslationMap = map[string] string {
+var keyTranslationMap = map[string]string{
 	"C#": "Db",
 	"D#": "Eb",
 	"F#": "Gb",
@@ -19,56 +18,62 @@ var keyTranslationMap = map[string] string {
 	"Bb": "A#",
 }
 
-func Scale(tonic string, interval string) []string{
+const (
+	// WholeStep is an interval between two notes
+	WholeStep byte = 'M'
 
-	initializeKeyboard()
-	setStartingKey(tonic)
+	// AugmentedFirst is an interval with two interceding notes
+	AugmentedFirst byte = 'A'
+)
 
+// Scale takes a tonic and an interval to return a collection of notes
+func Scale(tonic string, interval string) []string {
+
+	keyboard := initializeKeyboard(tonic)
 	renderFlatNotes := shouldRenderFlatNotes(tonic)
-
-	keyCount := 12
+	notesToReturn := keyboard.Len()
 
 	if interval != "" {
-		keyCount = len(interval)
+		notesToReturn = len(interval)
 	}
 
-	scale := make([]string, keyCount)
-	for i := 0; i < keyCount; i++ {
+	scale := make([]string, notesToReturn)
+	for i := 0; i < notesToReturn; i++ {
 
-		currentNote := keys.Value.(string)
+		currentNote := keyboard.Value.(string)
 
 		if isSharpNote(currentNote) && renderFlatNotes {
-			scale[i] = keyTranslationMap[keys.Value.(string)]
+			scale[i] = keyTranslationMap[keyboard.Value.(string)]
 		} else {
-			scale[i] = keys.Value.(string)
+			scale[i] = keyboard.Value.(string)
 		}
 
-		if interval != "" && interval[i] == 'M' {
-			keys = keys.Move(2)
-		} else if interval != "" && interval[i] == 'A' {
-			keys = keys.Move(3)
+		if interval != "" && interval[i] == AugmentedFirst {
+			keyboard = keyboard.Move(3)
+		} else if interval != "" && interval[i] == WholeStep {
+			keyboard = keyboard.Move(2)
 		} else {
-			keys = keys.Next()
+			keyboard = keyboard.Next()
 		}
 	}
 
 	return scale
 }
 
-func initializeKeyboard() {
+func initializeKeyboard(tonic string) (keyboard *ring.Ring) {
+	keyboard = ring.New(12)
 	keyboardKeys := []string{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"}
 
-	for i := 0; i < keys.Len(); i++ {
-		keys.Value = keyboardKeys[i]
-		keys = keys.Next()
+	for _, value := range keyboardKeys {
+		keyboard.Value = value
+		keyboard = keyboard.Next()
 	}
-}
 
-func setStartingKey(tonic string)  {
-
-	for strings.EqualFold(keys.Value.(string), tonic) == false && strings.EqualFold(keyTranslationMap[keys.Value.(string)], tonic) == false {
-		keys = keys.Next()
+	for strings.EqualFold(keyboard.Value.(string), tonic) == false && strings.EqualFold(keyTranslationMap[keyboard.Value.(string)], tonic) == false {
+		keyboard = keyboard.Next()
 	}
+
+	return
 }
 
 func shouldRenderFlatNotes(tonic string) bool {
