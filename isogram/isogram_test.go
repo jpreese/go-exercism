@@ -2,22 +2,26 @@ package isogram
 
 import "testing"
 
-func TestIsIsogram(t *testing.T) {
-	for _, c := range testCases {
-		if IsIsogram(c.input) != c.expected {
-			t.Fatalf("FAIL: %s\nWord %q, expected %t, got %t", c.description, c.input, c.expected, !c.expected)
+func BenchmarkIsIsogramAppendRune(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for _, c := range testCases {
+			IsIsogramAppendRune(c.input)
 		}
-
-		t.Logf("PASS: Word %q", c.input)
 	}
 }
 
-func BenchmarkIsIsogram(b *testing.B) {
+func BenchmarkIsIsogramSortWord(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-
 		for _, c := range testCases {
-			IsIsogram(c.input)
+			IsIsogramSortWord(c.input)
 		}
+	}
+}
 
+func BenchmarkIsIsogramUsingMap(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for _, c := range testCases {
+			IsIsogramUsingMap(c.input)
+		}
 	}
 }
