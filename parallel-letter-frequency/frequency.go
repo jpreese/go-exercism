@@ -6,17 +6,21 @@ type FreqMap map[rune]int
 func ConcurrentFrequency(input []string) FreqMap {
 
 	results := make(chan FreqMap)
-	freqMap := make(FreqMap)
+	totalFrequencies := make(FreqMap)
+
+	for _, value := range input {
+		go func(phrase string) {
+			results <- Frequency(phrase)
+		}(value)
+	}
 
 	for i := 0; i < len(input); i++ {
-		go worker(input[i], results)
+		for key, value := range <-results {
+			totalFrequencies[key] += value
+		}
 	}
 
-	for j := 0; j < len(input); j++ {
-		addToMap(freqMap, <-results)
-	}
-
-	return freqMap
+	return totalFrequencies
 }
 
 // Frequency counts how many times a letter appears in a string
@@ -26,19 +30,4 @@ func Frequency(s string) FreqMap {
 		m[r]++
 	}
 	return m
-}
-
-func worker(phrase string, results chan<- FreqMap) {
-	results <- Frequency(phrase)
-}
-
-func addToMap(finalResult FreqMap, partialResult FreqMap) {
-	for key, value := range partialResult {
-		_, exists := finalResult[key]
-		if exists {
-			finalResult[key] = finalResult[key] + value
-		} else {
-			finalResult[key] = partialResult[key]
-		}
-	}
 }
