@@ -1,44 +1,34 @@
 package letter
 
-type FreqMap map[rune]int
+// FrequencyMap holds a rune and the number of occurances
+type FrequencyMap map[rune]int
 
 // ConcurrentFrequency gets the total number of occurances for each letter in each array
-func ConcurrentFrequency(input []string) FreqMap {
+func ConcurrentFrequency(input []string) FrequencyMap {
 
-	results := make(chan FreqMap)
-	freqMap := make(FreqMap)
+	results := make(chan FrequencyMap)
+	output := make(FrequencyMap)
+
+	for _, value := range input {
+		go func(phrase string) {
+			results <- Frequency(phrase)
+		}(value)
+	}
 
 	for i := 0; i < len(input); i++ {
-		go worker(input[i], results)
+		for key, value := range <-results {
+			output[key] += value
+		}
 	}
 
-	for j := 0; j < len(input); j++ {
-		addToMap(freqMap, <-results)
-	}
-
-	return freqMap
+	return output
 }
 
 // Frequency counts how many times a letter appears in a string
-func Frequency(s string) FreqMap {
-	m := FreqMap{}
+func Frequency(s string) FrequencyMap {
+	m := FrequencyMap{}
 	for _, r := range s {
 		m[r]++
 	}
 	return m
-}
-
-func worker(phrase string, results chan<- FreqMap) {
-	results <- Frequency(phrase)
-}
-
-func addToMap(finalResult FreqMap, partialResult FreqMap) {
-	for key, value := range partialResult {
-		_, exists := finalResult[key]
-		if exists {
-			finalResult[key] = finalResult[key] + value
-		} else {
-			finalResult[key] = partialResult[key]
-		}
-	}
 }
