@@ -1,11 +1,13 @@
 package letter
 
-type FreqMap map[rune]int
+// FrequencyMap holds a rune and the number of occurances
+type FrequencyMap map[rune]int
 
 // ConcurrentFrequency gets the total number of occurances for each letter in each array
-func ConcurrentFrequency(input []string) (output FreqMap) {
+func ConcurrentFrequency(input []string) FrequencyMap {
 
-	results := make(chan FreqMap)
+	results := make(chan FrequencyMap)
+	output := make(FrequencyMap)
 
 	for _, value := range input {
 		go func(phrase string) {
@@ -19,12 +21,12 @@ func ConcurrentFrequency(input []string) (output FreqMap) {
 		}
 	}
 
-	return
+	return output
 }
 
 // Frequency counts how many times a letter appears in a string
-func Frequency(s string) FreqMap {
-	m := FreqMap{}
+func Frequency(s string) FrequencyMap {
+	m := FrequencyMap{}
 	for _, r := range s {
 		m[r]++
 	}
